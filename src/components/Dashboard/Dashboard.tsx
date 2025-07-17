@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { 
   FolderOpen, 
   FileText, 
@@ -9,38 +9,10 @@ import {
   Activity,
   Calendar
 } from 'lucide-react';
-import { useObservable } from '../../hooks/useObservable';
-import { dashboardService } from '../../services/DashboardService';
-import { DashboardStats } from '../../types';
+import { mockStats } from '../../data/mockData';
 
 const Dashboard: React.FC = () => {
-  const [recentActivities, setRecentActivities] = useState<Array<{
-    id: number;
-    action: string;
-    customer: string;
-    time: string;
-  }>>([]);
-
-  const stats = useObservable<DashboardStats>(
-    dashboardService.getDashboardStats(),
-    {
-      activeProjects: 0,
-      pendingQuotations: 0,
-      completedInstallations: 0,
-      upcomingServices: 0,
-      totalRevenue: 0,
-      monthlyGrowth: 0,
-    }
-  );
-
-  useEffect(() => {
-    const subscription = dashboardService.getRecentActivities().subscribe({
-      next: setRecentActivities,
-      error: (error) => console.error('Error loading recent activities:', error)
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const stats = mockStats;
 
   const statCards = [
     {
@@ -71,6 +43,13 @@ const Dashboard: React.FC = () => {
       color: 'bg-purple-50',
       change: '+5%',
     },
+  ];
+
+  const recentActivities = [
+    { id: 1, action: 'New quotation generated', customer: 'Robert Johnson', time: '2 hours ago' },
+    { id: 2, action: 'Payment received', customer: 'Emily Davis', time: '4 hours ago' },
+    { id: 3, action: 'Project completed', customer: 'Michael Brown', time: '1 day ago' },
+    { id: 4, action: 'Service scheduled', customer: 'Sarah Wilson', time: '2 days ago' },
   ];
 
   return (
