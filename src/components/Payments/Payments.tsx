@@ -1,0 +1,225 @@
+import React, { useState } from 'react';
+import { Plus, Search, Filter, Receipt, CreditCard, CheckCircle, Clock } from 'lucide-react';
+import { mockPayments, mockProjects, mockCustomers } from '../../data/mockData';
+
+const Payments: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [stageFilter, setStageFilter] = useState('All');
+
+  const paymentsWithDetails = mockPayments.map(payment => {
+    const project = mockProjects.find(p => p.id === payment.projectId);
+    const customer = mockCustomers.find(c => c.id === project?.customerId);
+    return {
+      ...payment,
+      projectName: project?.name || 'Unknown Project',
+      customerName: customer?.name || 'Unknown Customer',
+    };
+  });
+
+  const filteredPayments = paymentsWithDetails.filter(payment => {
+    const matchesSearch = payment.projectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         payment.customerName.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'All' || payment.status === statusFilter;
+    const matchesStage = stageFilter === 'All' || payment.stage === stageFilter;
+    return matchesSearch && matchesStatus && matchesStage;
+  });
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Paid':
+        return 'bg-green-100 text-green-800';
+      case 'Pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'Overdue':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStageIcon = (stage: string) => {
+    switch (stage) {
+      case 'Booking':
+        return <CreditCard className="w-4 h-4" />;
+      case 'Package Reservation':
+        return <Receipt className="w-4 h-4" />;
+      case 'Package Delivery':
+        return <Clock className="w-4 h-4" />;
+      case 'Completion':
+        return <CheckCircle className="w-4 h-4" />;
+      default:
+        return <CreditCard className="w-4 h-4" />;
+    }
+  };
+
+  const totalPaid = filteredPayments.filter(p => p.status === 'Paid').reduce((sum, p) => sum + p.amount, 0);
+  const totalPending = filteredPayments.filter(p => p.status === 'Pending').reduce((sum, p) => sum + p.amount, 0);
+  const totalOverdue = filteredPayments.filter(p => p.status === 'Overdue').reduce((sum, p) => sum + p.amount, 0);
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Payment Management</h1>
+          <p className="text-gray-600">Track and manage project payments</p>
+        </div>
+        <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2">
+          <Plus className="w-4 h-4" />
+          <span>Record Payment</span>
+        </button>
+      </div>
+
+      {/* Payment Summary */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Total Paid</p>
+              <p className="text-2xl font-bold text-green-600">${totalPaid.toLocaleString()}</p>
+            </div>
+            <div className="p-3 bg-green-50 rounded-full">
+              <CheckCircle className="w-6 h-6 text-green-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Pending</p>
+              <p className="text-2xl font-bold text-yellow-600">${totalPending.toLocaleString()}</p>
+            </div>
+            <div className="p-3 bg-yellow-50 rounded-full">
+              <Clock className="w-6 h-6 text-yellow-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Overdue</p>
+              <p className="text-2xl font-bold text-red-600">${totalOverdue.toLocaleString()}</p>
+            </div>
+            <div className="p-3 bg-red-50 rounded-full">
+              <Receipt className="w-6 h-6 text-red-600" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Search and Filter */}
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search payments..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            />
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <Filter className="w-4 h-4 text-gray-400" />
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              >
+                <option value="All">All Status</option>
+                <option value="Paid">Paid</option>
+                <option value="Pending">Pending</option>
+                <option value="Overdue">Overdue</option>
+              </select>
+            </div>
+            <select
+              value={stageFilter}
+              onChange={(e) => setStageFilter(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            >
+              <option value="All">All Stages</option>
+              <option value="Booking">Booking</option>
+              <option value="Package Reservation">Package Reservation</option>
+              <option value="Package Delivery">Package Delivery</option>
+              <option value="Completion">Completion</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Payment List */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Payment Details
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Customer
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Stage
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Amount
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Due Date
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredPayments.map((payment) => (
+                <tr key={payment.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">{payment.projectName}</div>
+                      <div className="text-sm text-gray-500">#{payment.id}</div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">{payment.customerName}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center space-x-2">
+                      {getStageIcon(payment.stage)}
+                      <span className="text-sm text-gray-900">{payment.stage}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">
+                      ${payment.amount.toLocaleString()}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(payment.status)}`}>
+                      {payment.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">{payment.dueDate}</div>
+                    {payment.paidAt && (
+                      <div className="text-sm text-green-600">Paid on {payment.paidAt}</div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Payments;
