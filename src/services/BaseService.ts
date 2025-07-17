@@ -67,3 +67,5 @@ export abstract class BaseService<T> {
   abstract update(id: string, item: Partial<T>): Observable<T>;
   abstract delete(id: string): Observable<boolean>;
 }
+
+export { BaseService }
