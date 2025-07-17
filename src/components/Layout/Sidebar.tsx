@@ -14,6 +14,8 @@ interface SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   userRole: string;
+  isMobileMenuOpen: boolean;
+  onMenuClose: () => void;
 }
 
 interface MenuItem {
@@ -23,7 +25,7 @@ interface MenuItem {
   roles: string[];
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, userRole }) => {
+const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, userRole, isMobileMenuOpen, onMenuClose }) => {
   const menuItems: MenuItem[] = [
     {
       id: 'dashboard',
@@ -71,8 +73,26 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, userRole }) 
 
   const filteredMenuItems = menuItems.filter(item => item.roles.includes(userRole));
 
+  const handleMenuItemClick = (itemId: string) => {
+    setActiveTab(itemId);
+    onMenuClose();
+  };
+
   return (
-    <div className="w-64 bg-white shadow-lg h-screen">
+    <>
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={onMenuClose}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <div className={`
+        fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg h-screen transform transition-transform duration-300 ease-in-out
+        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
       <nav className="mt-6">
         <div className="px-4 pb-4">
           <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
@@ -83,7 +103,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, userRole }) 
           {filteredMenuItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => handleMenuItemClick(item.id)}
               className={`w-full flex items-center justify-between px-4 py-3 text-left transition-colors ${
                 activeTab === item.id
                   ? 'bg-green-50 text-green-700 border-r-2 border-green-600'
@@ -101,7 +121,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, userRole }) 
           ))}
         </div>
       </nav>
-    </div>
+      </div>
+    </>
   );
 };
 

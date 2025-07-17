@@ -12,7 +12,16 @@ import { mockUsers } from '../../data/mockData';
 
 const Layout: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const currentUser = mockUsers[0]; // Using first user as current user
+
+  const handleMenuToggle = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleMenuClose = () => {
+    setIsMobileMenuOpen(false);
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -41,10 +50,16 @@ const Layout: React.FC = () => {
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
         userRole={currentUser.role}
+        isMobileMenuOpen={isMobileMenuOpen}
+        onMenuClose={handleMenuClose}
       />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header currentUser={currentUser} />
-        <main className="flex-1 overflow-y-auto p-6">
+        <Header 
+          currentUser={currentUser} 
+          onMenuToggle={handleMenuToggle}
+          isMobileMenuOpen={isMobileMenuOpen}
+        />
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
           {renderContent()}
         </main>
       </div>

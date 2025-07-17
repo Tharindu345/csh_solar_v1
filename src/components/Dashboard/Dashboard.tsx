@@ -55,16 +55,16 @@ const Dashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-lg p-8 text-white">
-        <div className="flex items-center justify-between">
+      <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-lg p-4 md:p-8 text-white">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Welcome to CSH Solar CMS</h1>
-            <p className="text-green-100 text-lg">
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">Welcome to CSH Solar CMS</h1>
+            <p className="text-green-100 text-base md:text-lg">
               Managing your solar projects efficiently and professionally
             </p>
           </div>
-          <div className="text-right">
-            <div className="flex items-center space-x-2 text-2xl font-bold">
+          <div className="text-left md:text-right">
+            <div className="flex items-center space-x-2 text-xl md:text-2xl font-bold">
               <DollarSign className="w-8 h-8" />
               <span>${stats.totalRevenue.toLocaleString()}</span>
             </div>
@@ -78,13 +78,13 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {statCards.map((stat, index) => (
-          <div key={index} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div key={index} className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                <p className="text-xl md:text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
                 <p className="text-sm text-green-600 mt-1">{stat.change}</p>
               </div>
               <div className={`p-3 rounded-full ${stat.color}`}>
@@ -96,28 +96,28 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Quick Actions and Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         {/* Quick Actions */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-200">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
           <div className="space-y-3">
-            <button className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors font-medium">
+            <button className="w-full bg-green-600 text-white py-2 md:py-3 px-4 rounded-lg hover:bg-green-700 transition-colors font-medium text-sm md:text-base">
               Create New Project
             </button>
-            <button className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+            <button className="w-full bg-blue-600 text-white py-2 md:py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm md:text-base">
               Generate Quotation
             </button>
-            <button className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors font-medium">
+            <button className="w-full bg-purple-600 text-white py-2 md:py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors font-medium text-sm md:text-base">
               Schedule Service
             </button>
-            <button className="w-full bg-orange-600 text-white py-3 px-4 rounded-lg hover:bg-orange-700 transition-colors font-medium">
+            <button className="w-full bg-orange-600 text-white py-2 md:py-3 px-4 rounded-lg hover:bg-orange-700 transition-colors font-medium text-sm md:text-base">
               Add Customer
             </button>
           </div>
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-200">
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
             <Activity className="w-5 h-5 mr-2" />
             Recent Activity
@@ -138,22 +138,22 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Monthly Performance */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+      <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <Calendar className="w-5 h-5 mr-2" />
           Monthly Performance
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
           <div className="text-center">
-            <div className="text-3xl font-bold text-green-600">24</div>
+            <div className="text-2xl md:text-3xl font-bold text-green-600">24</div>
             <p className="text-sm text-gray-600">Projects Started</p>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-blue-600">18</div>
+            <div className="text-2xl md:text-3xl font-bold text-blue-600">18</div>
             <p className="text-sm text-gray-600">Quotations Sent</p>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-purple-600">12</div>
+            <div className="text-2xl md:text-3xl font-bold text-purple-600">12</div>
             <p className="text-sm text-gray-600">Services Completed</p>
           </div>
         </div>
