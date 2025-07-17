@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { Project } from '../../types';
-import { mockCustomers, mockPackages } from '../../data/mockData';
+import { useObservable } from '../../hooks/useObservable';
+import { customerService } from '../../services/CustomerService';
+import { packageService } from '../../services/PackageService';
 
 interface ProjectFormProps {
   project?: Project;
@@ -10,6 +12,9 @@ interface ProjectFormProps {
 }
 
 const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSubmit, onClose }) => {
+  const customers = useObservable(customerService.items, []);
+  const packages = useObservable(packageService.items, []);
+
   const [formData, setFormData] = useState({
     name: project?.name || '',
     customerId: project?.customerId || '',
@@ -23,7 +28,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSubmit, onClose })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const selectedPackage = mockPackages.find(p => p.id === formData.packageId);
+    const selectedPackage = packages.find(p => p.id === formData.packageId);
     
     const projectData = {
       ...formData,
@@ -100,7 +105,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSubmit, onClose })
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
               >
                 <option value="">Select Customer</option>
-                {mockCustomers.map(customer => (
+                {customers.map(customer => (
                   <option key={customer.id} value={customer.id}>
                     {customer.name}
                   </option>
@@ -201,7 +206,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSubmit, onClose })
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
             >
               <option value="">Select Package</option>
-              {mockPackages.map(pkg => (
+              {packages.map(pkg => (
                 <option key={pkg.id} value={pkg.id}>
                   {pkg.name} - ${pkg.totalPrice.toLocaleString()}
                 </option>
@@ -213,7 +218,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSubmit, onClose })
           {formData.packageId && (
             <div className="bg-gray-50 p-3 md:p-4 rounded-lg">
               <h3 className="font-medium text-gray-900 mb-2">Package Details</h3>
-              {mockPackages.find(p => p.id === formData.packageId)?.components.map((component, index) => (
+              {packages.find(p => p.id === formData.packageId)?.components.map((component, index) => (
                 <div key={index} className="text-sm text-gray-600 mb-1">
                   {component.quantity}x {component.brand} {component.model} ({component.type})
                 </div>

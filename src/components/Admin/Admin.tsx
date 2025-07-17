@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
 import { Settings, Users, Package, DollarSign, Database, Shield } from 'lucide-react';
-import { mockUsers, mockComponents, mockPackages } from '../../data/mockData';
+import { useObservable } from '../../hooks/useObservable';
+import { customerService } from '../../services/CustomerService';
+import { componentService } from '../../services/ComponentService';
+import { packageService } from '../../services/PackageService';
+import { mockUsers } from '../../data/mockData';
 
 const Admin: React.FC = () => {
   const [activeSection, setActiveSection] = useState('users');
+
+  const customers = useObservable(customerService.items, []);
+  const components = useObservable(componentService.items, []);
+  const packages = useObservable(packageService.items, []);
 
   const adminSections = [
     { id: 'users', label: 'User Management', icon: <Users className="w-5 h-5" /> },
@@ -82,13 +90,29 @@ const Admin: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold text-gray-900">Component Inventory</h2>
-        <button className="bg-green-600 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm">
+        <button 
+          onClick={() => {
+            // Example of creating a new component via RxJS
+            componentService.create({
+              type: 'Panel',
+              brand: 'New Brand',
+              model: 'New Model',
+              quantity: 10,
+              price: 300,
+              warranty: '25 years'
+            }).subscribe({
+              next: (component) => console.log('Component created:', component),
+              error: (error) => console.error('Error creating component:', error)
+            });
+          }}
+          className="bg-green-600 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm"
+        >
           Add Component
         </button>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-        {mockComponents.map((component) => (
+        {components.map((component) => (
           <div key={component.id} className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex justify-between items-start mb-4">
               <div>
@@ -119,10 +143,22 @@ const Admin: React.FC = () => {
               </div>
             </div>
             <div className="mt-4 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-              <button className="flex-1 bg-blue-600 text-white py-2 px-3 rounded-lg hover:bg-blue-700 transition-colors text-sm">
+              <button 
+                onClick={() => {
+                  componentService.update(component.id, { quantity: component.quantity + 1 }).subscribe();
+                }}
+                className="flex-1 bg-blue-600 text-white py-2 px-3 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+              >
                 Edit
               </button>
-              <button className="bg-red-600 text-white py-2 px-3 rounded-lg hover:bg-red-700 transition-colors text-sm">
+              <button 
+                onClick={() => {
+                  if (confirm('Delete this component?')) {
+                    componentService.delete(component.id).subscribe();
+                  }
+                }}
+                className="bg-red-600 text-white py-2 px-3 rounded-lg hover:bg-red-700 transition-colors text-sm"
+              >
                 Delete
               </button>
             </div>
@@ -142,7 +178,7 @@ const Admin: React.FC = () => {
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-        {mockPackages.map((pkg) => (
+        {packages.map((pkg) => (
           <div key={pkg.id} className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex justify-between items-start mb-4">
               <div>
@@ -165,7 +201,14 @@ const Admin: React.FC = () => {
               <button className="flex-1 bg-blue-600 text-white py-2 px-3 rounded-lg hover:bg-blue-700 transition-colors text-sm">
                 Edit Package
               </button>
-              <button className="bg-red-600 text-white py-2 px-3 rounded-lg hover:bg-red-700 transition-colors text-sm">
+              <button 
+                onClick={() => {
+                  if (confirm('Delete this package?')) {
+                    packageService.delete(pkg.id).subscribe();
+                  }
+                }}
+                className="bg-red-600 text-white py-2 px-3 rounded-lg hover:bg-red-700 transition-colors text-sm"
+              >
                 Delete
               </button>
             </div>
